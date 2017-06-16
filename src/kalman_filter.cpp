@@ -104,23 +104,23 @@ void KalmanFilter::SetFMatrix(float dt) {
 
 void KalmanFilter::Update(const MeasurementPackage& package) {
     
+    Eigen::VectorXd y;
+    
     // Update
     if (package.sensor_type_ == MeasurementPackage::RADAR) {
-        
+        // Radar loss
         Eigen::VectorXd cartesianMeas = aux_.PolarToCartesian(package.raw_measurements_);
-        
         H_ = aux_.CalculateJacobian(cartesianMeas);
         R_ = R_radar_;
-        UpdateWithRadar(package.raw_measurements_);
-        
-        
+        y = RadarLoss(package.raw_measurements_);
     } else {
-        // Laser updates
+        // Laser loss
         H_ = H_laser_;
         R_ = R_laser_;
-        UpdateWithLidar(package.raw_measurements_);
-        
+        y = LidarLoss(package.raw_measurements_);
     }
+    
+    ComputeNewEstimate(KMatrix(), y);
 }
 
 void KalmanFilter::ComputeNewEstimate(const Eigen::MatrixXd& K, const Eigen::VectorXd& y) {
@@ -131,16 +131,7 @@ void KalmanFilter::ComputeNewEstimate(const Eigen::MatrixXd& K, const Eigen::Vec
     P_ = (I - K * H_) * P_;
 }
 
-void KalmanFilter::UpdateWithLidar(const VectorXd& z) {
-    
-    VectorXd y = z - H_ * x_;
-    
-    //new estimate
-    ComputeNewEstimate(KMatrix(), y);
-}
-
-void KalmanFilter::UpdateWithRadar(const VectorXd& z) {
-    
+Eigen::VectorXd KalmanFilter::RadarLoss(const Eigen::VectorXd& z) {
     VectorXd pred = aux_.CartesianToPolar(x_);
     VectorXd y = z - pred;
     
@@ -148,6 +139,12 @@ void KalmanFilter::UpdateWithRadar(const VectorXd& z) {
     //https://carnd.slack.com/files/udasuburb/F5R5S9XEU/pasted_image_at_2017_06_10_02_39_pm.png
     y(1) = fmod(y(1), M_PI);
     
-    //new estimate
-    ComputeNewEstimate(KMatrix(), y);
+    return y;
 }
+
+Eigen::VectorXd KalmanFilter::LidarLoss(const Eigen::VectorXd& z) {
+    
+    return z - H_ * x_;;
+}
+
+

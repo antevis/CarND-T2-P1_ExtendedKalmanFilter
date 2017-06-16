@@ -46,27 +46,28 @@ public:
     * @param delta_T Time between k and k+1 in s
     */
     void Predict();
-
-    /**
-    * Updates the state by using standard Kalman Filter equations
-    * @param z The measurement at k+1
-    */
-    void UpdateWithLidar(const Eigen::VectorXd &z);
-
-    /**
-    * Updates the state by using Extended Kalman Filter equations
-    * @param z The measurement at k+1
-    */
-    void UpdateWithRadar(const Eigen::VectorXd &z);
     
+    // Part of the Update phase. Computes x_ and P_
     void ComputeNewEstimate(const Eigen::MatrixXd& K, const Eigen::VectorXd& y);
     
+    // Computes K matrix
     Eigen::MatrixXd KMatrix();
+    // Updates Q matrix
     Eigen::MatrixXd QMatrix(float dt, float noise_ax, float noise_ay);
     void SetQMatrix(float dt, float noise_ax, float noise_ay);
+    
+    // Updates F matrix
     void SetFMatrix(float dt);
     
+    /**
+     * Updates the state by using Kalman Filter equations
+     * @param package The measurement package at k+1
+     */
     void Update(const MeasurementPackage& package);
+    
+    // Computes y
+    Eigen::VectorXd RadarLoss(const Eigen::VectorXd& z);
+    Eigen::VectorXd LidarLoss(const Eigen::VectorXd& z);
     
     //To conveniently invoke helper functions
     Tools aux_;

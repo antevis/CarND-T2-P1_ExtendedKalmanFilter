@@ -1,5 +1,4 @@
 #include "kalman_filter.h"
-
 #include <iostream>
 #include "tools.h"
 
@@ -23,44 +22,42 @@ void KalmanFilter::Init(VectorXd &x_in, MatrixXd &P_in, MatrixXd &F_in,
 void KalmanFilter::Predict() {
     
     x_ = F_ * x_;
-//    MatrixXd Ft = F_.transpose();
     P_ = F_ * P_ * F_.transpose() + Q_;
 }
 
-void KalmanFilter::Update(const VectorXd &z) {
+Eigen::MatrixXd KalmanFilter::KMatrix() {
+    MatrixXd h_t = H_.transpose(); // used more than once, so avoiding repeated calculations
+    MatrixXd s = H_ * P_ * h_t + R_;
+    MatrixXd K = P_ * h_t * s.inverse();
     
-    VectorXd y = z - H_ * x_;
-    MatrixXd hT = H_.transpose();
-    MatrixXd s = H_ * P_ * hT + R_;
-    MatrixXd K = P_ * hT * s.inverse();
+    return K;
+}
+
+void KalmanFilter::ComputeNewEstimate(const Eigen::MatrixXd& K, const Eigen::VectorXd& y) {
     
-    //new estimate
     x_ = x_ + (K * y);
     const long x_size = x_.size();
     MatrixXd I = MatrixXd::Identity(x_size, x_size);
     P_ = (I - K * H_) * P_;
 }
 
-void KalmanFilter::UpdateEKF(const VectorXd &z) {
-  /**
-  TODO:
-    * update the state by using Extended Kalman Filter equations
-  */
-    Tools t;
+void KalmanFilter::UpdateWithLidar(const VectorXd &z) {
     
-    VectorXd pred = t.cartesianToPolar(x_);
-    
-    VectorXd y = z - pred;
-    
-    y(1) = fmod(y(1), M_PI);
-    
-    MatrixXd hT = H_.transpose();
-    MatrixXd s = H_ * P_ * hT + R_;
-    MatrixXd K = P_ * hT * s.inverse();
+    VectorXd y = z - H_ * x_;
     
     //new estimate
-    x_ = x_ + (K * y);
-    const long x_size = x_.size();
-    MatrixXd I = MatrixXd::Identity(x_size, x_size);
-    P_ = (I - K * H_) * P_;
+    ComputeNewEstimate(KMatrix(), y);
+}
+
+void KalmanFilter::UpdateWithRadar(const VectorXd &z) {
+    
+    Tools t;
+    VectorXd pred = t.CartesianToPolar(x_);
+    VectorXd y = z - pred;
+    //Normalizing phi as suggested by Slack community:
+    //https://carnd.slack.com/files/udasuburb/F5R5S9XEU/pasted_image_at_2017_06_10_02_39_pm.png
+    y(1) = fmod(y(1), M_PI);
+    
+    //new estimate
+    ComputeNewEstimate(KMatrix(), y);
 }

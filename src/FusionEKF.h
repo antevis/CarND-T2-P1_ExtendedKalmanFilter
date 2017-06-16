@@ -11,25 +11,30 @@
 
 class FusionEKF {
 public:
-  /**
-  * Constructor.
-  */
-  FusionEKF();
+    /**
+    * Constructor.
+    */
+    FusionEKF();
 
-  /**
-  * Destructor.
-  */
-  virtual ~FusionEKF();
+    /**
+    * Destructor.
+    */
+    virtual ~FusionEKF();
 
-  /**
-  * Run the whole flow of the Kalman Filter from here.
-  */
-  void ProcessMeasurement(const MeasurementPackage &measurement_pack);
+    /**
+    * Run the whole flow of the Kalman Filter from here.
+    */
+    void ProcessMeasurement(const MeasurementPackage &measurement_pack);
 
-  /**
-  * Kalman Filter update and prediction math lives in here.
-  */
-  KalmanFilter ekf_;
+    /**
+    * Kalman Filter update and prediction math lives in here.
+    */
+    KalmanFilter ekf_;
+    
+    //To conveniently invoke helper functions
+    Tools aux_;
+    
+    
 
 private:
     // check whether the tracking toolbox was initialized or not (first measurement)
@@ -46,8 +51,8 @@ private:
     Eigen::MatrixXd Hj_;
     
     //acceleration noise components
-    float noise_ax;
-    float noise_ay;
+    const float noise_ax_ = 9;
+    const float noise_ay_ = 9;
     
 };
 

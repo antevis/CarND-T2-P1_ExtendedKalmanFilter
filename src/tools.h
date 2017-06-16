@@ -29,8 +29,8 @@ public:
     */
     MatrixXd CalculateJacobian(const VectorXd& x_state);
     
+    // Coordinate conversion
     VectorXd CartesianToPolar(const VectorXd& x_state);
-    
     VectorXd PolarToCartesian(const VectorXd& x_state);
 
 };

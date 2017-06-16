@@ -1,6 +1,8 @@
 #ifndef KALMAN_FILTER_H_
 #define KALMAN_FILTER_H_
 #include "Eigen/Dense"
+#include "measurement_package.h"
+#include "tools.h"
 
 class KalmanFilter {
 public:
@@ -22,6 +24,11 @@ public:
 
     // measurement covariance matrix
     Eigen::MatrixXd R_;
+    
+    //Sensors data
+    Eigen::MatrixXd R_laser_;
+    Eigen::MatrixXd R_radar_;
+    Eigen::MatrixXd H_laser_;
 
     /**
     * Constructor
@@ -32,18 +39,6 @@ public:
     * Destructor
     */
     virtual ~KalmanFilter();
-
-    /**
-    * Init Initializes Kalman filter
-    * @param x_in Initial state
-    * @param P_in Initial state covariance
-    * @param F_in Transition matrix
-    * @param H_in Measurement matrix
-    * @param R_in Measurement covariance matrix
-    * @param Q_in Process covariance matrix
-    */
-    void Init(Eigen::VectorXd &x_in, Eigen::MatrixXd &P_in, Eigen::MatrixXd &F_in,
-      Eigen::MatrixXd &H_in, Eigen::MatrixXd &R_in, Eigen::MatrixXd &Q_in);
 
     /**
     * Prediction Predicts the state and the state covariance
@@ -67,6 +62,14 @@ public:
     void ComputeNewEstimate(const Eigen::MatrixXd& K, const Eigen::VectorXd& y);
     
     Eigen::MatrixXd KMatrix();
+    Eigen::MatrixXd QMatrix(float dt, float noise_ax, float noise_ay);
+    void SetQMatrix(float dt, float noise_ax, float noise_ay);
+    void SetFMatrix(float dt);
+    
+    void Update(const MeasurementPackage& package);
+    
+    //To conveniently invoke helper functions
+    Tools aux_;
 
 };
 

@@ -9,8 +9,8 @@ Tools::Tools() {}
 
 Tools::~Tools() {}
 
-VectorXd Tools::CalculateRMSE(const vector<VectorXd> &estimations,
-                              const vector<VectorXd> &ground_truth) {
+VectorXd Tools::CalculateRMSE(const vector<VectorXd>& estimations,
+                              const vector<VectorXd>& ground_truth) {
     VectorXd rmse(4);
     rmse << 0,0,0,0;
     
@@ -22,7 +22,7 @@ VectorXd Tools::CalculateRMSE(const vector<VectorXd> &estimations,
     }
     
     //accumulate squared diffs
-    for(int i=0; i < estimations.size(); ++i){
+    for(int i=0; i < estimations.size(); ++i) {
         VectorXd currDiff = estimations[i] - ground_truth[i];
         
         currDiff = currDiff.array()*currDiff.array();
@@ -82,7 +82,7 @@ MatrixXd Tools::CalculateJacobian(const VectorXd& x_state) {
 }
 
 //Credits to Mithi Sevilla: https://github.com/mithi/fusion-ekf/blob/master/src/tools.cpp
-VectorXd Tools::CartesianToPolar(const VectorXd& measurement){
+VectorXd Tools::CartesianToPolar(const VectorXd& measurement) {
     
     VectorXd polar(3);
     
@@ -100,7 +100,7 @@ VectorXd Tools::CartesianToPolar(const VectorXd& measurement){
 }
 
 //Credits to Mithi Sevilla: https://github.com/mithi/fusion-ekf/blob/master/src/tools.cpp
-VectorXd Tools::PolarToCartesian(const VectorXd& measurement){
+VectorXd Tools::PolarToCartesian(const VectorXd& measurement) {
     
     VectorXd cartesian(4);
     

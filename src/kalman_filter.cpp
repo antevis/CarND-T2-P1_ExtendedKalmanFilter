@@ -64,6 +64,9 @@ Eigen::MatrixXd KalmanFilter::QMatrix(float dt, float noise_ax, float noise_ay) 
     
     Eigen::MatrixXd q = Eigen::MatrixXd(4, 4);
     
+    noise_ax = (noise_ax != 0) ? noise_ax : 1;
+    noise_ay = (noise_ay != 0) ? noise_ay : 1;
+    
     const float r0c0 = pow(dt, 4) / 4 * noise_ax;
     const float r0c1 = 0;
     const float r0c2 = pow(dt,3) / 2 * noise_ax;

@@ -93,7 +93,7 @@ VectorXd Tools::CartesianToPolar(const VectorXd& measurement) {
     
     const double rho = sqrt(px * px + py * py);
     const double phi = atan2(py, px);
-    const double rho_dot = ( px * vx + py * vy ) / rho;
+    const double rho_dot = (rho != 0) ? ( px * vx + py * vy ) / rho : 0;
     
     polar << rho, phi, rho_dot;
     return polar;

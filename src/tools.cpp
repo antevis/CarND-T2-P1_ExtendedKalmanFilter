@@ -44,10 +44,10 @@ MatrixXd Tools::CalculateJacobian(const VectorXd& x_state) {
     MatrixXd h_j(3,4);
     
     //recover state parameters
-    float px = x_state(0);
-    float py = x_state(1);
-    float vx = x_state(2);
-    float vy = x_state(3);
+    const float px = x_state(0);
+    const float py = x_state(1);
+    const float vx = x_state(2);
+    const float vy = x_state(3);
     
     // check for division by zero
     // denominator becomes zero iif both px and py are zero.

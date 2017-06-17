@@ -53,9 +53,9 @@ void KalmanFilter::Predict() {
 }
 
 Eigen::MatrixXd KalmanFilter::KMatrix() {
-    MatrixXd h_t = H_.transpose(); // used more than once, so avoiding repeated calculations
-    MatrixXd s = H_ * P_ * h_t + R_;
-    MatrixXd K = P_ * h_t * s.inverse();
+    const MatrixXd h_t = H_.transpose(); // used more than once, so avoiding repeated calculations
+    const MatrixXd s = H_ * P_ * h_t + R_;
+    const MatrixXd K = P_ * h_t * s.inverse();
     
     return K;
 }
@@ -127,12 +127,12 @@ void KalmanFilter::ComputeNewEstimate(const Eigen::MatrixXd& K, const Eigen::Vec
     
     x_ = x_ + (K * y);
     const long x_size = x_.size();
-    MatrixXd I = MatrixXd::Identity(x_size, x_size);
+    const MatrixXd I = MatrixXd::Identity(x_size, x_size);
     P_ = (I - K * H_) * P_;
 }
 
 Eigen::VectorXd KalmanFilter::RadarLoss(const Eigen::VectorXd& z) {
-    VectorXd pred = aux_.CartesianToPolar(x_);
+    const VectorXd pred = aux_.CartesianToPolar(x_);
     VectorXd y = z - pred;
     
     //Normalizing phi as suggested by Slack community:

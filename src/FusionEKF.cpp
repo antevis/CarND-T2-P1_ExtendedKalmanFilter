@@ -36,7 +36,7 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage& measurement_pack) {
         if (measurement_pack.sensor_type_ == MeasurementPackage::RADAR) {
             
             //Convert radar from polar to cartesian coordinates and initialize state.
-            Eigen::VectorXd init_state = tools.PolarToCartesian(measurement_pack.raw_measurements_);
+            const Eigen::VectorXd init_state = tools.PolarToCartesian(measurement_pack.raw_measurements_);
             
             ekf_.x_(0) = init_state(0);
             ekf_.x_(1) = init_state(1);
@@ -59,7 +59,7 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage& measurement_pack) {
     *  Prediction
     ****************************************************************************/
     //compute the time elapsed between the current and previous measurements
-    float dt = (measurement_pack.timestamp_ - previous_timestamp_) / 1000000.0;	//dt - expressed in seconds
+    const float dt = (measurement_pack.timestamp_ - previous_timestamp_) / 1000000.0;	//dt - expressed in seconds
     previous_timestamp_ = measurement_pack.timestamp_;
     
     //1. Updating the F matrix so that the time is integrated
